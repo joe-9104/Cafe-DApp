@@ -393,6 +393,15 @@ contract CafeCertification {
         return result;
     }
 
+    function getAllApplicationIds()
+        external
+        view
+        onlyAdmin
+        returns (uint256[] memory)
+    {
+        return allApplicationIds;
+    }
+
     function getApplicationForReview(
         uint256 applicationId
     ) external view returns (Application memory) {

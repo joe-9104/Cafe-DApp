@@ -1,0 +1,933 @@
+[
+  {
+    "inputs": [],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "entrepreneur",
+        "type": "address"
+      }
+    ],
+    "name": "ApplicationCompleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "entrepreneur",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "cafeName",
+        "type": "string"
+      }
+    ],
+    "name": "ApplicationCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "RoleAssigned",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "RoleRevoked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      }
+    ],
+    "name": "SupplementaryValidationRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "validator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "ValidationDecided",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      }
+    ],
+    "name": "ValidationOpened",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "entrepreneur",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "correctionNote",
+        "type": "string"
+      }
+    ],
+    "name": "ValidationResubmitted",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "administrator",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "assignRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "cafeName",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "establishmentAddress",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "coveredArea",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "employeeCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "createApplication",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      },
+      {
+        "internalType": "string",
+        "name": "reason",
+        "type": "string"
+      }
+    ],
+    "name": "decideValidation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAllApplicationIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApplication",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "cafeName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "establishmentAddress",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coveredArea",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "employeeCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "municipality",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "civilProtection",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "taxOffice",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "rne",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "cnss",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct CafeCertification.Application",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getApplicationForReview",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "cafeName",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "establishmentAddress",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "coveredArea",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "employeeCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "createdAt",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "municipality",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "civilProtection",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "taxOffice",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "rne",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "enum CafeCertification.ValidationStatus",
+                "name": "status",
+                "type": "uint8"
+              },
+              {
+                "internalType": "address",
+                "name": "decidedBy",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "decidedAt",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "rejectionReason",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "correctionNote",
+                "type": "string"
+              },
+              {
+                "internalType": "uint256",
+                "name": "attempts",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct CafeCertification.Validation",
+            "name": "cnss",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct CafeCertification.Application",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMainStatus",
+    "outputs": [
+      {
+        "internalType": "enum CafeCertification.MainStatus",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getMyApplicationIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getPendingApplicationIds",
+    "outputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "",
+        "type": "uint256[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextApplicationId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "representativeOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      }
+    ],
+    "name": "requestSupplementaryValidation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "organization",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "correctionNote",
+        "type": "string"
+      }
+    ],
+    "name": "resubmitRejectedValidation",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "role",
+        "type": "uint8"
+      }
+    ],
+    "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "roleOf",
+    "outputs": [
+      {
+        "internalType": "enum CafeCertification.Role",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
