@@ -1,0 +1,13 @@
+{
+  "blockchain/contracts/CafeCertification.sol": {
+    "__sources__": {}
+  },
+  "blockchain/contracts/ConnectionCheck.sol": {
+    "__sources__": {
+      "blockchain/contracts/ConnectionCheck.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\ncontract BookRental {\r\n    address public owner;\r\n    struct Book {\r\n        uint id;\r\n        string title;\r\n        bool isRented;\r\n    }\r\n    Book[] public books;\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n\r\n    event BookAdded(uint bookId, string title);\r\n    event BookRented(uint bookId, address renter);\r\n    event BookReturned(uint bookId, address renter);\r\n\r\n    modifier onlyOwner() {\r\n    require(msg.sender == owner, \"Acces refuse\");\r\n    _;\r\n    }\r\n\r\n    function addBook(string memory _title) public onlyOwner {\r\n     books.push(Book(books.length, _title, false));\r\n     emit BookAdded(books.length - 1, _title);\r\n    }\r\n\r\n    mapping(uint => address) public rentedBy;\r\n    uint public rentFee = 1 ether;\r\n    function rentBook(uint _bookId) public payable {\r\n        require(msg.value == rentFee, \"Montant incorrect\");\r\n        require(_bookId < books.length, \"Livre inexistant\");\r\n        require(!books[_bookId].isRented, \"Deja loue\");\r\n        books[_bookId].isRented = true;\r\n        rentedBy[_bookId] = msg.sender;\r\n        emit BookRented(_bookId, msg.sender);\r\n        }\r\n\r\n    function returnBook(uint _bookId) public {\r\n        require(rentedBy[_bookId] == msg.sender, \"Vous n'avez pas loue ce livre\");\r\n        books[_bookId].isRented = false;\r\n        rentedBy[_bookId] = address(0);\r\n        emit BookReturned(_bookId, msg.sender);\r\n    }\r\n\r\n\r\n}",
+        "file": "blockchain/contracts/ConnectionCheck.sol"
+      }
+    }
+  }
+}
