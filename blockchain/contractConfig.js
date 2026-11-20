@@ -1,7 +1,7 @@
 import CafeCertificationABI from "./CafeCertification.json";
 
 // Adresse du contrat final déployé sur Ganache
-export const CONTRACT_ADDRESS = "0xCONTRACT_ADDRESS"; //Ne pas oublier de la modifier!!
+export const CONTRACT_ADDRESS = "0x73e6B834F332DA2D99506368d874F072F3c52a7b";
 
 // ABI du Smart Contract
 export const CONTRACT_ABI = CafeCertificationABI;
