@@ -53,6 +53,49 @@
     "inputs": [
       {
         "indexed": true,
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "attachmentId",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "filename",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "documentType",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "sha256Hash",
+        "type": "string"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "uploadedBy",
+        "type": "address"
+      }
+    ],
+    "name": "AttachmentAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -191,6 +234,44 @@
     ],
     "name": "ValidationResubmitted",
     "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "attachmentId",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "filename",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "documentType",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "sha256Hash",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "storageReference",
+        "type": "string"
+      }
+    ],
+    "name": "addAttachment",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [],
@@ -775,6 +856,81 @@
         "internalType": "struct CafeCertification.Application",
         "name": "",
         "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAttachmentCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "applicationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getAttachments",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "attachmentId",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "filename",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "documentType",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "sha256Hash",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "storageReference",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "uploadedBy",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "uploadedAt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct CafeCertification.Attachment[]",
+        "name": "",
+        "type": "tuple[]"
       }
     ],
     "stateMutability": "view",

@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { WalletProvider } from "./context/WalletContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { useWallet } from "./hooks/useWallet";
 import { ROLES } from "./blockchain/contractConfig";
 import { getRoleDashboardPath } from "./utils/roleUtils";
@@ -91,9 +92,10 @@ function RootRedirect() {
 
 export default function App() {
   return (
-    <WalletProvider>
-      <BrowserRouter>
-        <Routes>
+    <NotificationProvider>
+      <WalletProvider>
+        <BrowserRouter>
+          <Routes>
           {/* Route d'authentification */}
           <Route path="/login" element={<LoginPage />} />
 
@@ -189,5 +191,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </WalletProvider>
+  </NotificationProvider>
   );
 }

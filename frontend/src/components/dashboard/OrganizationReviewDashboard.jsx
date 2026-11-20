@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useWallet } from "../../hooks/useWallet";
+import { useNotification } from "../../hooks/useNotification";
 import {
   getPendingApplicationsForOrganization,
   decideValidation,
+  getAttachments,
 } from "../../services/applicationService";
 import { parseBlockchainError, formatTimestamp, formatAddress } from "../../blockchain/blockchainUtils";
 import { ValidationBadge } from "../common/Badge";
@@ -10,6 +12,8 @@ import { Button } from "../common/Button";
 import { Modal } from "../common/Modal";
 import { Alert } from "../common/Alert";
 import { LoadingSpinner } from "../common/LoadingSpinner";
+import { AttachmentList } from "../attachments/AttachmentList";
+import { ConfirmModal } from "../common/ConfirmModal";
 import {
   CheckCircle,
   XCircle,
@@ -23,6 +27,7 @@ import {
   AlertTriangle,
   Info,
   CheckCircle2,
+  Paperclip,
 } from "lucide-react";
 
 export function OrganizationReviewDashboard({
@@ -34,6 +39,7 @@ export function OrganizationReviewDashboard({
   roleSpecificNote = null,
 }) {
   const { account } = useWallet();
+  const { notifySuccess, notifyError } = useNotification();
 
   const [pendingApps, setPendingApps] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -42,9 +48,14 @@ export function OrganizationReviewDashboard({
 
   // Modal d'examen et décision
   const [reviewApp, setReviewApp] = useState(null);
+  const [reviewAttachments, setReviewAttachments] = useState([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
   const [decision, setDecision] = useState("approve"); // 'approve' | 'reject'
   const [rejectionReason, setRejectionReason] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Modal confirmation
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const loadPending = useCallback(async () => {
     setLoading(true);
@@ -63,11 +74,23 @@ export function OrganizationReviewDashboard({
     loadPending();
   }, [loadPending]);
 
-  const handleOpenReview = (app) => {
+  const handleOpenReview = async (app) => {
     setReviewApp(app);
     setDecision("approve");
     setRejectionReason("");
     setError(null);
+
+    // Charger les pièces jointes associées au dossier
+    setLoadingAttachments(true);
+    try {
+      const atts = await getAttachments(app.id);
+      setReviewAttachments(atts);
+    } catch (e) {
+      console.warn("Erreur chargement pièces jointes:", e);
+      setReviewAttachments([]);
+    } finally {
+      setLoadingAttachments(false);
+    }
   };
 
   const handleDecisionSubmit = async (e) => {
@@ -78,9 +101,16 @@ export function OrganizationReviewDashboard({
 
     if (!approved && !rejectionReason.trim()) {
       setError("Le motif du rejet est obligatoire pour notifier le refus.");
+      notifyError("Le motif du rejet est obligatoire.");
       return;
     }
 
+    // Ouvrir la confirmation visuelle pour action sensible
+    setConfirmModalOpen(true);
+  };
+
+  const handleExecuteDecision = async () => {
+    const approved = decision === "approve";
     setIsSubmitting(true);
     setError(null);
     try {
@@ -91,15 +121,19 @@ export function OrganizationReviewDashboard({
         approved ? "" : rejectionReason.trim()
       );
 
-      setSuccessMsg(
-        `Décision enregistrée avec succès sur la blockchain ! (Validation ${
-          approved ? "Approuvée" : "Rejetée"
-        })`
-      );
+      const msg = `Décision enregistrée avec succès sur la blockchain ! (Validation ${
+        approved ? "Approuvée" : "Rejetée"
+      })`;
+      setSuccessMsg(msg);
+      notifySuccess(msg);
+      setConfirmModalOpen(false);
       setReviewApp(null);
       await loadPending();
     } catch (err) {
-      setError(parseBlockchainError(err));
+      const parsedErr = parseBlockchainError(err);
+      setError(parsedErr);
+      notifyError(parsedErr);
+      setConfirmModalOpen(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -392,6 +426,15 @@ export function OrganizationReviewDashboard({
               </div>
             </div>
 
+            {/* Pièces justificatives déposées par l'entrepreneur */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <AttachmentList
+                attachments={reviewAttachments}
+                loading={loadingAttachments}
+                canUpload={false}
+              />
+            </div>
+
             {/* Checklist de vérification simulation */}
             {checklistItems.length > 0 && (
               <div style={{ marginBottom: "1.25rem" }}>
@@ -547,6 +590,22 @@ export function OrganizationReviewDashboard({
           </form>
         )}
       </Modal>
+
+      {/* Modal de confirmation visuelle d'action sensible */}
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handleExecuteDecision}
+        title={decision === "approve" ? "Confirmer l'approbation" : "Confirmer le rejet"}
+        message={
+          decision === "approve"
+            ? `Êtes-vous sûr de vouloir émettre un avis FAVORABLE pour le dossier #${reviewApp?.id} (${reviewApp?.cafeName}) ?`
+            : `Êtes-vous certain de vouloir REJETER le dossier #${reviewApp?.id} (${reviewApp?.cafeName}) avec le motif : « ${rejectionReason} » ? L'entrepreneur devra déposer une note de correction.`
+        }
+        confirmText={decision === "approve" ? "Approuver et signer" : "Rejeter et signer"}
+        variant={decision === "approve" ? "success" : "danger"}
+        loading={isSubmitting}
+      />
     </div>
   );
 }

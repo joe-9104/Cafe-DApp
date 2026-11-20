@@ -273,3 +273,133 @@ export async function getAdministrator() {
   const contract = await getContract(true);
   return await contract.administrator();
 }
+
+/**
+ * ========================================================
+ * SERVICES PIÈCES JOINTES (BACKEND & SMART CONTRACT)
+ * ========================================================
+ */
+
+const BACKEND_URL = import.meta.env?.VITE_BACKEND_URL || "http://localhost:5000";
+
+/**
+ * Téléverse le fichier sur le backend Express de stockage local
+ * Calcule son empreinte SHA-256 et retourne ses métadonnées
+ */
+export async function uploadAttachmentToBackend(file, documentType) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("documentType", documentType);
+
+  const response = await fetch(`${BACKEND_URL}/api/attachments/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Échec du téléversement vers le serveur de stockage.");
+  }
+
+  return data;
+}
+
+/**
+ * Supprime un fichier téléversé sur le backend si la transaction blockchain a été rejetée/annulée
+ */
+export async function deleteUploadedAttachment(attachmentId) {
+  try {
+    await fetch(`${BACKEND_URL}/api/attachments/${attachmentId}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    console.warn("Échec du nettoyage du fichier temporaire:", err);
+  }
+}
+
+/**
+ * Vérifie l'intégrité cryptographique d'un fichier auprès du backend par rapport à l'empreinte blockchain
+ */
+export async function verifyAttachmentIntegrity(attachmentId, expectedSha256) {
+  const url = `${BACKEND_URL}/api/attachments/${attachmentId}/verify?expectedHash=${encodeURIComponent(
+    expectedSha256 || ""
+  )}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  if (!response.ok) {
+    return {
+      status: "NOT_FOUND",
+      verified: false,
+      message: data.error || "Fichier ou métadonnées non trouvés sur le serveur.",
+    };
+  }
+  return data;
+}
+
+/**
+ * Retourne l'URL d'aperçu d'un document
+ */
+export function getAttachmentPreviewUrl(attachmentId) {
+  return `${BACKEND_URL}/api/attachments/${attachmentId}`;
+}
+
+/**
+ * Retourne l'URL de téléchargement direct d'un document
+ */
+export function getAttachmentDownloadUrl(attachmentId) {
+  return `${BACKEND_URL}/api/attachments/${attachmentId}/download`;
+}
+
+/**
+ * Normalise un objet Attachment Solidity
+ */
+function normalizeAttachment(att) {
+  if (!att) return null;
+  return {
+    attachmentId: att.attachmentId || "",
+    filename: att.filename || "",
+    documentType: att.documentType || "Autre document",
+    sha256Hash: att.sha256Hash || "",
+    storageReference: att.storageReference || "",
+    uploadedBy: att.uploadedBy || "",
+    uploadedAt: safeBigIntToNumber(att.uploadedAt),
+  };
+}
+
+/**
+ * Enregistre les métadonnées de la pièce jointe sur le Smart Contract
+ */
+export async function addAttachment(applicationId, {
+  attachmentId,
+  filename,
+  documentType,
+  sha256Hash,
+  storageReference,
+}) {
+  const contract = await getContract(false);
+  const tx = await contract.addAttachment(
+    BigInt(applicationId),
+    attachmentId,
+    filename,
+    documentType,
+    sha256Hash,
+    storageReference
+  );
+  const receipt = await tx.wait();
+  return { tx, receipt };
+}
+
+/**
+ * Récupère les pièces jointes d'un dossier depuis le Smart Contract
+ */
+export async function getAttachments(applicationId) {
+  const contract = await getContract(false);
+  try {
+    const rawList = await contract.getAttachments(BigInt(applicationId));
+    return (rawList || []).map(normalizeAttachment);
+  } catch (err) {
+    console.warn(`Impossible de récupérer les pièces jointes pour #${applicationId}:`, err);
+    return [];
+  }
+}
+

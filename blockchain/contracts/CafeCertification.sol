@@ -61,6 +61,16 @@ contract CafeCertification {
         uint256 attempts;
     }
 
+    struct Attachment {
+        string attachmentId;
+        string filename;
+        string documentType;
+        string sha256Hash;
+        string storageReference;
+        address uploadedBy;
+        uint256 uploadedAt;
+    }
+
     struct Application {
         uint256 id;
         address owner;
@@ -91,6 +101,8 @@ contract CafeCertification {
     mapping(Role => address) public representativeOf;
 
     mapping(uint256 => Application) private applications;
+
+    mapping(uint256 => Attachment[]) private applicationAttachments;
 
     mapping(address => uint256[]) private ownerApplications;
 
@@ -146,6 +158,15 @@ contract CafeCertification {
     event ApplicationCompleted(
         uint256 indexed applicationId,
         address indexed entrepreneur
+    );
+
+    event AttachmentAdded(
+        uint256 indexed applicationId,
+        string attachmentId,
+        string filename,
+        string documentType,
+        string sha256Hash,
+        address indexed uploadedBy
     );
 
     // =========================================================
@@ -701,7 +722,125 @@ contract CafeCertification {
     }
 
     // =========================================================
-    // 14. INTERNAL HELPERS
+    // 14. ATTACHMENT MANAGEMENT
+    // =========================================================
+
+    function addAttachment(
+        uint256 applicationId,
+        string calldata attachmentId,
+        string calldata filename,
+        string calldata documentType,
+        string calldata sha256Hash,
+        string calldata storageReference
+    ) external {
+
+        Application storage app = applications[applicationId];
+
+        require(
+            app.id != 0,
+            "Application does not exist"
+        );
+
+        require(
+            app.owner == msg.sender,
+            "Not application owner"
+        );
+
+        require(
+            bytes(attachmentId).length > 0,
+            "Attachment ID required"
+        );
+
+        require(
+            bytes(filename).length > 0,
+            "Filename required"
+        );
+
+        require(
+            bytes(documentType).length > 0,
+            "Document type required"
+        );
+
+        require(
+            bytes(sha256Hash).length > 0,
+            "SHA-256 hash required"
+        );
+
+        require(
+            bytes(storageReference).length > 0,
+            "Storage reference required"
+        );
+
+        applicationAttachments[applicationId].push(
+            Attachment({
+                attachmentId: attachmentId,
+                filename: filename,
+                documentType: documentType,
+                sha256Hash: sha256Hash,
+                storageReference: storageReference,
+                uploadedBy: msg.sender,
+                uploadedAt: block.timestamp
+            })
+        );
+
+        emit AttachmentAdded(
+            applicationId,
+            attachmentId,
+            filename,
+            documentType,
+            sha256Hash,
+            msg.sender
+        );
+    }
+
+    function getAttachments(
+        uint256 applicationId
+    ) external view returns (Attachment[] memory) {
+
+        Application storage app = applications[applicationId];
+
+        require(
+            app.id != 0,
+            "Application does not exist"
+        );
+
+        Role currentRole = roleOf[msg.sender];
+
+        require(
+            msg.sender == app.owner ||
+            currentRole == Role.Admin ||
+            _isOrganization(currentRole),
+            "Access denied"
+        );
+
+        return applicationAttachments[applicationId];
+    }
+
+    function getAttachmentCount(
+        uint256 applicationId
+    ) external view returns (uint256) {
+
+        Application storage app = applications[applicationId];
+
+        require(
+            app.id != 0,
+            "Application does not exist"
+        );
+
+        Role currentRole = roleOf[msg.sender];
+
+        require(
+            msg.sender == app.owner ||
+            currentRole == Role.Admin ||
+            _isOrganization(currentRole),
+            "Access denied"
+        );
+
+        return applicationAttachments[applicationId].length;
+    }
+
+    // =========================================================
+    // 15. INTERNAL HELPERS
     // =========================================================
 
     function _isOrganization(
