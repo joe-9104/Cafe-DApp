@@ -7,7 +7,7 @@ Projet académique simulant la procédure administrative officielle pour l'obten
 ## 🏛️ Architecture du Projet
 
 - **Smart Contract** : `blockchain/contracts/CafeCertification.sol`
-  - Déployé sur Ganache : `0x73e6B834F332DA2D99506368d874F072F3c52a7b`
+  - Déployé sur Ganache
   - ABI : `blockchain/CafeCertification.json`
   - Config : `blockchain/contractConfig.js`
 - **Frontend** : `frontend/`
